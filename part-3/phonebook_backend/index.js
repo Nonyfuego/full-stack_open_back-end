@@ -1,8 +1,10 @@
 const express = require('express')
 const morgan = require('morgan')
+const cors = require('cors')
+
 const app = express()
 const PORT = 3001
-
+const generateId = () => Math.round(Math.random() * 1000000)
 let persons = [
     { 
       "id": 1,
@@ -26,9 +28,10 @@ let persons = [
     }
 ]
 
-const generateId = () => Math.round(Math.random() * 1000000)
 // custom token, log response data
 morgan.token('data', (_req, res) => res.data)
+
+app.use(cors())
 
 app.use(express.json())
 
