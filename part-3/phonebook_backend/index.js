@@ -2,7 +2,7 @@ const express = require('express')
 const app = express()
 const PORT = 3001
 
-const persons = [
+let persons = [
     { 
       "id": 1,
       "name": "Arto Hellas", 
@@ -25,6 +25,11 @@ const persons = [
     }
 ]
 
+const generateId = () => Math.round(Math.random() * 1000000)
+
+
+app.use(express.json())
+
 app.get('/api/persons', (_req, res) => {
     res.json(persons)
 })
@@ -46,6 +51,13 @@ app.get('/api/persons/:id', (req, res) => {
     } else {
         res.json(person)
     }   
+})
+
+app.post('/api/persons', (req, res) => {
+    let newPerson = req.body
+    newPerson.id = generateId()
+    persons = persons.concat(newPerson)
+    res.json(newPerson)
 })
 
 app.listen(PORT, () => {
