@@ -1,4 +1,5 @@
 const express = require('express')
+const morgan = require('morgan')
 const app = express()
 const PORT = 3001
 
@@ -26,9 +27,12 @@ let persons = [
 ]
 
 const generateId = () => Math.round(Math.random() * 1000000)
-
+// custom token, log response data
+morgan.token('data', (_req, res) => res.data)
 
 app.use(express.json())
+
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :data'))
 
 app.get('/api/persons', (_req, res) => {
     res.json(persons)
@@ -56,8 +60,25 @@ app.get('/api/persons/:id', (req, res) => {
 app.post('/api/persons', (req, res) => {
     let newPerson = req.body
     newPerson.id = generateId()
-    persons = persons.concat(newPerson)
-    res.json(newPerson)
+    if (!newPerson.name) {
+        let errorMsg = {error: "name is missing"}
+        res.data = JSON.stringify(errorMsg)
+        res.status(400).json()
+    } else if (!newPerson.number) {
+        let errorMsg = {error: "number is missing"}
+        res.data = JSON.stringify(errorMsg)
+        res.status(400).json()
+    } else if (persons.some(p => p.name === newPerson.name)) {
+        let errorMsg = {error: "name must be unique"}
+        res.data = JSON.stringify(errorMsg)
+        res.status(400).json(errorMsg) 
+    } else {
+        persons = persons.concat(newPerson)
+        // custom morgan token 
+        // log response data using morgan
+        res.data = JSON.stringify(newPerson)
+        res.status(201).json(newPerson)
+    }
 })
 
 app.listen(PORT, () => {
