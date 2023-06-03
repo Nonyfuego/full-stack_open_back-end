@@ -29,9 +29,11 @@ let persons = [
 ]
 
 // custom token, log response data
-morgan.token('data', (_req, res) => res.data)
+morgan.token('data', (req) => req.data)
 
 app.use(cors())
+
+//app.use(express.static())
 
 app.use(express.json())
 
@@ -60,7 +62,10 @@ app.get('/api/persons/:id', (req, res) => {
     }   
 })
 
-app.post('/api/persons', (req, res) => {
+app.post('/api/persons', (req, res) => {        
+    // custom morgan token 
+    // log request data using morgan
+    req.data = JSON.stringify(req.body)
     let newPerson = req.body
     newPerson.id = generateId()
     if (!newPerson.name) {
@@ -77,9 +82,7 @@ app.post('/api/persons', (req, res) => {
         res.status(400).json(errorMsg) 
     } else {
         persons = persons.concat(newPerson)
-        // custom morgan token 
-        // log response data using morgan
-        res.data = JSON.stringify(newPerson)
+
         res.status(201).json(newPerson)
     }
 })
