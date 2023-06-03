@@ -5,6 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
+    "build:ui": "rm -rf dist && cd ../full-stack_open_course/part-2/the_phonebook && npm run build && cp -r dist ../../../full-stack_open_back-end", 
+    "deploy": "npm run build:ui && git add . && git commit -m 'add dist folder' && git push" ,
     "dev": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
